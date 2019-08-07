@@ -1,0 +1,8 @@
+/.git
+/.idea
+/barge
+Dockerfile
+docker-compose.yml
+.dockerignore
+.DS_Store
+Thumbs.db

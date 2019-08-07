@@ -1,0 +1,138 @@
+#!/usr/bin/env bash
+
+VERSION="0.0.0"
+
+# Define output colors
+ESC_CODE="\033["
+COLOR_RESET=${ESC_CODE}"0m"
+COLOR_RED=${ESC_CODE}"0;31m"
+COLOR_GREEN=${ESC_CODE}"0;32m"
+COLOR_YELLOW=${ESC_CODE}"0;33m"
+COLOR_BLUE=${ESC_CODE}"0;34m"
+COLOR_MAGENTA=${ESC_CODE}"0;35m"
+COLOR_CYAN=${ESC_CODE}"0;36m"
+
+## Check running system
+UNAME_OUTPUT="$(uname -s)"
+
+case "${UNAME_OUTPUT}" in
+Linux*) MACHINE=linux ;;
+Darwin*) MACHINE=mac ;;
+*) MACHINE="unknown" ;;
+esac
+
+if [ "$MACHINE" == "unknown" ]; then
+  echo "Unsupported system."
+  echo "System must be a Linux or a Mac."
+  echo "(Your reported system is: ${UNAME_OUTPUT})"
+fi
+
+# Set machine specific variables
+#if [ "$MACHINE" == "linux" ]; then
+#    VAR="foo"
+#elif [ "$MACHINE" == "mac" ]; then
+#    VAR="bar"
+#fi
+
+# Set global variables
+DIRNAME="$(dirname $0)"
+
+showVersion() {
+  intro="${COLOR_GREEN}Barge${COLOR_RESET}"
+  intro="$intro\nVersion ${COLOR_BLUE}${VERSION}${COLOR_RESET}"
+  printf "{$intro}"
+  printf "\n"
+}
+
+showUsage() {
+  usage="${COLOR_YELLOW}Usage:${COLOR_RESET} \n"
+  usage="$usage bin/barge <cmd> \n"
+
+  printf "\n"
+  printf "{$usage}"
+
+  commands="${COLOR_YELLOW}Commands:${COLOR_RESET} \n"
+  commands="$commands version                   Show the version screen \n"
+  commands="$commands help                      Show the help screen \n"
+  commands="$commands load                      Build your containers \n"
+  commands="$commands sail                      Run your containers \n"
+  commands="$commands dock                      Stop your containers \n"
+  commands="$commands sink                      Destroy your containers \n"
+  commands="$commands exec                      Execute the given command on the app container \n"
+
+  printf "\n"
+  printf "{$commands}"
+}
+
+showHelp() {
+  showVersion
+  showUsage
+}
+
+if [ $# -gt 0 ]; then
+
+  # Show version screen
+  if [ "$1" == "version" ]; then
+    showVersion
+    printf "\n"
+    exit 0
+  fi
+
+  # Show help screen
+  if [ "$1" == "help" ]; then
+    showHelp
+    printf "\n"
+    exit 0
+  fi
+
+  # Build your containers
+  if [ "$1" == "load" ]; then
+    printf "${COLOR_GREEN}[%s] Building your containers... ${COLOR_RESET} \n" "${ENV}"
+    docker-compose -f ../docker-compose.yml build
+    printf "\n"
+    exit 0
+  fi
+
+  # Run your containers
+  if [ "$1" == "sail" ]; then
+    printf "${COLOR_GREEN}[%s] Run your containers... ${COLOR_RESET} \n" "${ENV}"
+    docker-compose -f ../docker-compose.yml up -d
+    printf "\n"
+    exit 0
+  fi
+
+  # Stop your containers
+  if [ "$1" == "dock" ]; then
+    printf "${COLOR_GREEN}[%s] Stop your containers... ${COLOR_RESET} \n" "${ENV}"
+    docker-compose stop
+    printf "\n"
+    exit 0
+  fi
+
+  # Destroy your containers
+  if [ "$1" == "sink" ]; then
+    printf "${COLOR_GREEN}[%s] Destroy your containers... ${COLOR_RESET} \n" "${ENV}"
+    docker-compose down
+    printf "\n"
+    exit 0
+  fi
+
+  # Execute the given command on the app container
+  if [ "$1" == "exec" ]; then
+    docker-compose exec -u captain workspace "${1}"
+    printf "\n"
+    exit 0
+  fi
+
+  # Invalid command
+  printf "$%sNothing to do$%s" "${COLOR_YELLOW}" "${COLOR_RESET}"
+  printf "\n"
+  exit 0
+
+else
+
+  # Show the help screen if no arguments are passed
+  showHelp
+  exit 0
+
+fi
