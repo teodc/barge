@@ -1,6 +1,6 @@
 # Barge
 
-> ⚠️ This project is still a work in progress
+> ⚠️ Work in progress
 
 Barge provides you a dockerized environment to run your PHP application.
 
@@ -62,9 +62,9 @@ bin/barge help
 ---
 
 ## ToDo:
+- Make & reuse own PHP image
 - Write Dockerfile for the `app` container
 - Add a `memcached` container
 - Finalize bin/barge
 - Update readme.md
-- Check docker-sync
 - ...
