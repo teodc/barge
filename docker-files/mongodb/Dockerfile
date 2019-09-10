@@ -1,9 +1,9 @@
-FROM mongo:latest
+FROM mongo:4.2
 
 EXPOSE 27017
 
-COPY mongod.conf /etc/mongo/mongod.conf
+COPY mongod.conf /etc/mongo/
 
 WORKDIR /etc/mongo
 
-ENTRYPOINT ["mongod"]
+CMD ["mongod"]

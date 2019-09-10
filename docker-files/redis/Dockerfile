@@ -1,9 +1,9 @@
-FROM redis:latest
+FROM redis:5.0
 
 EXPOSE 6379
 
-COPY redis.conf /etc/redis/redis.conf
+COPY redis.conf /etc/redis/
 
 WORKDIR /etc/redis
 
-ENTRYPOINT ["redis-server"]
+CMD ["redis-server"]

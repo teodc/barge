@@ -1,4 +1,5 @@
 /.idea
-barge.env
+.env
+docker-compose.yml
 .DS_Store
 Thumbs.db

@@ -2,7 +2,7 @@
 
 > ⚠️ Work in progress
 
-Barge provides you a dockerized environment to run your PHP application.
+Barge provides you with dockerized environment to run your Laravel application.
 
 ## Requirements
 
@@ -20,28 +20,34 @@ git clone https://github.com/teodc/barge.git barge
 
 > Don't forget to add `/barge` to your project's `.gitignore` file.
 
-Add the `docker-compose.yml` and `.dockerignore` files in your project directory:
+Get in your `barge` folder:
 
 ```
-cp barge/docker-composer.yml.dist docker-compose.yml
-cp barge/.dockerignore.dist .dockerignore
+cd barge
 ```
 
-Prepare an environment file from the `barge.env.dist`:
+Prepare your `docker-compose.yml` and `.env` files:
 
 ```
-cp barge/barge.env.dist barge/barge.env
+cp docker-composer.yml.dist docker-compose.yml
+cp .env.dist .env
 ```
 
-Update your `barge.env` environment file:
+Update your `.env` environment file to match your requirements:
 
 ```
-vim barge/barge.env
+vim .env
+```
+
+Add a `.dockerignore` file to your project root folder:
+
+```
+cp .dockerignore.dist ../.dockerignore
 ```
 
 ## Usage
 
-Use the `barge` bash executable to
+Use the `barge` executable to manage your containers:
 
 ```
 bin/barge help
@@ -49,21 +55,21 @@ bin/barge help
 
 ### Stack
 
-- app (WIP)
 - maildev
 - mongodb
 - mysql
+- redis
 - nginx
 - php-fpm
-- php-queue-worker
+- php-worker
 - php-scheduler
-- redis
+- workbench
 
 ---
 
 ## ToDo:
 - Make & reuse own PHP image
-- Write Dockerfile for the `app` container
+- Write Dockerfile for the `workbench` container
 - Add a `memcached` container
 - Finalize bin/barge
 - Update readme.md

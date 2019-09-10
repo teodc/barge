@@ -104,7 +104,7 @@ if [ $# -gt 0 ]; then
   # Stop your containers
   if [ "$1" == "dock" ]; then
     printf "${COLOR_GREEN}[%s] Stop your containers... ${COLOR_RESET} \n" "${ENV}"
-    docker-compose stop
+    docker-compose -f ../docker-compose.yml stop
     printf "\n"
     exit 0
   fi
@@ -112,14 +112,14 @@ if [ $# -gt 0 ]; then
   # Destroy your containers
   if [ "$1" == "sink" ]; then
     printf "${COLOR_GREEN}[%s] Destroy your containers... ${COLOR_RESET} \n" "${ENV}"
-    docker-compose down
+    docker-compose -f ../docker-compose.yml down
     printf "\n"
     exit 0
   fi
 
   # Execute the given command on the app container
   if [ "$1" == "exec" ]; then
-    docker-compose exec -u captain workspace "${1}"
+    docker-compose -f ../docker-compose.yml exec -u captain workbench "${1}"
     printf "\n"
     exit 0
   fi

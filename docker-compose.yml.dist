@@ -7,11 +7,10 @@ networks:
 services:
 
   # ----------------------------------------------------------------------------
+
   maildev:
-    env_file:
-      - ./barge/barge.env
     build:
-      context: ./barge/docker-files/maildev
+      context: ./docker-files/maildev
     ports:
       - ${MAILDEV_HTTP_PORT}:80
       - ${MAILDEV_SMTP_PORT}:25
@@ -19,11 +18,10 @@ services:
       - backend
 
   # ----------------------------------------------------------------------------
+
   mongodb:
-    env_file:
-      - ./barge/barge.env
     build:
-      context: ./barge/docker-files/mongodb
+      context: ./docker-files/mongodb
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGODB_ROOT_USER}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_ROOT_PASSWORD}
@@ -38,11 +36,10 @@ services:
       - backend
 
   # ----------------------------------------------------------------------------
+
   mysql:
-    env_file:
-      - ./barge/barge.env
     build:
-      context: ./barge/docker-files/mysql
+      context: ./docker-files/mysql
     environment:
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
@@ -57,48 +54,44 @@ services:
       - backend
 
   # ----------------------------------------------------------------------------
+
   nginx:
-    env_file:
-      - ./barge/barge.env
     build:
-      context: ./barge/docker-files/nginx
+      context: ./docker-files/nginx
     volumes:
-      - ./barge/docker-files/nginx/ssl/:/etc/nginx/ssl
-      - ./barge/docker-files/nginx/sites/:/etc/nginx/sites
       - ${HOST_APP_PATH}:/var/www/acme
+      - ${HOST_LOGS_PATH}/nginx:/var/log/nginx
     ports:
       - ${NGINX_HOST_HTTP_PORT}:80
       - ${NGINX_HOST_HTTPS_PORT}:443
     depends_on:
-      - php-api
+      - php-fpm
     networks:
       - backend
 
   # ----------------------------------------------------------------------------
+
   php-fpm:
-    env_file:
-      - ./barge/barge.env
     build:
-      context: ./barge/docker-files/php-fpm
+      context: ./docker-files/php-fpm
       args:
         - PHP_VERSION=${PHP_VERSION}
         - PHP_INSTALL_XDEBUG=${PHP_INSTALL_XDEBUG}
     expose:
       - 9000
     volumes:
-      - ${HOST_LOGS_PATH}/php-api:/var/log/php-fpm
       - ${HOST_APP_PATH}:/var/www/acme
+      - ${HOST_LOGS_PATH}/php-fpm:/var/log/php-fpm
     extra_hosts:
       - dockerhost:${DOCKER_HOST_IP}
     networks:
       - backend
 
   # ----------------------------------------------------------------------------
-  php-queue-worker:
-    env_file:
-      - ./barge/barge.env
+
+  php-worker:
     build:
-      context: ./barge/docker-files/php-queue-worker
+      context: ./docker-files/php-worker
       args:
         - PHP_VERSION=${PHP_VERSION}
     volumes:
@@ -109,11 +102,10 @@ services:
       - backend
 
   # ----------------------------------------------------------------------------
+
   php-scheduler:
-    env_file:
-      - ./barge/barge.env
     build:
-      context: ./barge/docker-files/php-scheduler
+      context: ./docker-files/php-scheduler
       args:
         - PHP_VERSION=${PHP_VERSION}
     volumes:
@@ -124,11 +116,10 @@ services:
       - backend
 
   # ----------------------------------------------------------------------------
+
   redis:
-    env_file:
-      - ./barge/barge.env
     build:
-      context: ./barge/docker-files/redis
+      context: ./docker-files/redis
     volumes:
       - ${HOST_DATA_PATH}/redis:/var/lib/redis
       - ${HOST_LOGS_PATH}/redis:/var/log/redis
@@ -138,20 +129,18 @@ services:
       - backend
 
   # ----------------------------------------------------------------------------
-  app:
-    env_file:
-      - ./barge/barge.env
+
+  workbench:
     build:
-      context: ./barge/docker-files/app
+      context: ./docker-files/workbench
       args:
         - PHP_VERSION=${PHP_VERSION}
     volumes:
       - ${HOST_APP_PATH}:/var/www/acme
     networks:
       - backend
-    depends_on:
-      - mongodb
+    depends_on:ßß
       - mysql
-      - nginx
+      - mongodb
       - redis
 
