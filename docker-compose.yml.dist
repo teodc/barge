@@ -139,8 +139,7 @@ services:
       - ${HOST_APP_PATH}:/var/www/acme
     networks:
       - backend
-    depends_on:ßß
+    depends_on:
       - mysql
       - mongodb
       - redis
-
