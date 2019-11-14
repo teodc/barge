@@ -2,6 +2,8 @@ ARG PHP_VERSION=7.3
 
 FROM php:${PHP_VERSION}-cli
 
+WORKDIR /app/acme
+
 RUN addgroup -g 1000 barge && \
     adduser -D -g barge -u 1000 captain
 
@@ -14,10 +16,6 @@ RUN docker-php-ext-install \
     opcache \
     pdo_mysql \
     pcntl
-
-# RUN apt-get install -y libgd-dev libpng-dev libjpeg-dev libfreetype6-dev \
-#    && docker-php-ext-configure gd --with-gd --with-png-dir=/usr/include --with-jpeg-dir=/usr/include --with-freetype-dir=/usr/include/freetype2 \
-#    && docker-php-ext-install gd
 
 RUN apt-get install -y libicu-dev \
     && docker-php-ext-configure intl \
@@ -33,6 +31,10 @@ RUN pecl install mongodb \
 RUN pecl install redis \
     && docker-php-ext-enable redis
 
+# RUN apt-get install -y libgd-dev libpng-dev libjpeg-dev libfreetype6-dev \
+#    && docker-php-ext-configure gd --with-gd --with-png-dir=/usr/include --with-jpeg-dir=/usr/include --with-freetype-dir=/usr/include/freetype2 \
+#    && docker-php-ext-install gd
+
 #RUN apt-get install -y libmemcached-dev zlib1g-dev \
 #    && pecl install memcached \
 #    && docker-php-ext-enable memcached
@@ -43,7 +45,5 @@ RUN apt-get clean
 
 COPY supervisord.conf /etc/supervisor/
 COPY conf.d/worker.conf /etc/supervisor/
-
-WORKDIR /etc/supervisor
 
 CMD ["supervisord", "-n", "-c",  "/etc/supervisor/supervisord.conf"]

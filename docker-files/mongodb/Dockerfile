@@ -1,9 +1,9 @@
-FROM mongo:4.2
+FROM mongo:4
 
 EXPOSE 27017
 
-COPY mongod.conf /etc/mongo/
-
 WORKDIR /etc/mongo
+
+COPY mongod.conf /etc/mongo/
 
 CMD ["mongod"]

@@ -1,8 +1,4 @@
-version: '3'
-
-networks:
-  backend:
-    driver: bridge
+version: "3"
 
 services:
 
@@ -14,8 +10,6 @@ services:
     ports:
       - ${MAILDEV_HTTP_PORT}:80
       - ${MAILDEV_SMTP_PORT}:25
-    networks:
-      - backend
 
   # ----------------------------------------------------------------------------
 
@@ -29,11 +23,9 @@ services:
     ports:
       - ${MONGODB_PORT}:27017
     volumes:
-      - ${HOST_DATA_PATH}/mongodb:/data/db
-      - ${HOST_DATA_PATH}/mongodb:/data/configdb
-      - ${HOST_LOGS_PATH}/mongodb:/var/log/mongodb
-    networks:
-      - backend
+      - ./data/mongodb:/data/db
+      - ./data/mongodb:/data/configdb
+      - ./logs/mongodb:/var/log/mongodb
 
   # ----------------------------------------------------------------------------
 
@@ -46,12 +38,10 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     volumes:
-      - ${HOST_DATA_PATH}/mysql:/var/lib/mysql
-      - ${HOST_LOGS_PATH}/mysql:/var/log/mysql
+      - ./data/mysql:/var/lib/mysql
+      - ./logs/mysql:/var/log/mysql
     ports:
       - ${MYSQL_PORT}:3306
-    networks:
-      - backend
 
   # ----------------------------------------------------------------------------
 
@@ -59,15 +49,13 @@ services:
     build:
       context: ./docker-files/nginx
     volumes:
-      - ${HOST_APP_PATH}:/var/www/acme
-      - ${HOST_LOGS_PATH}/nginx:/var/log/nginx
+      - ..:/var/www/acme
+      - ./logs/nginx:/var/log/nginx
     ports:
       - ${NGINX_HOST_HTTP_PORT}:80
       - ${NGINX_HOST_HTTPS_PORT}:443
     depends_on:
       - php-fpm
-    networks:
-      - backend
 
   # ----------------------------------------------------------------------------
 
@@ -80,12 +68,8 @@ services:
     expose:
       - 9000
     volumes:
-      - ${HOST_APP_PATH}:/var/www/acme
-      - ${HOST_LOGS_PATH}/php-fpm:/var/log/php-fpm
-    extra_hosts:
-      - dockerhost:${DOCKER_HOST_IP}
-    networks:
-      - backend
+      - ..:/app/acme
+      - ./logs/php-fpm:/var/log/php-fpm
 
   # ----------------------------------------------------------------------------
 
@@ -95,11 +79,7 @@ services:
       args:
         - PHP_VERSION=${PHP_VERSION}
     volumes:
-      - ${HOST_APP_PATH}:/var/www/acme
-    extra_hosts:
-      - dockerhost:${DOCKER_HOST_IP}
-    networks:
-      - backend
+      - ..:/app/acme
 
   # ----------------------------------------------------------------------------
 
@@ -109,11 +89,7 @@ services:
       args:
         - PHP_VERSION=${PHP_VERSION}
     volumes:
-      - ${HOST_APP_PATH}:/var/www/acme
-    extra_hosts:
-      - dockerhost:${DOCKER_HOST_IP}
-    networks:
-      - backend
+      - ..:/app/acme
 
   # ----------------------------------------------------------------------------
 
@@ -121,12 +97,10 @@ services:
     build:
       context: ./docker-files/redis
     volumes:
-      - ${HOST_DATA_PATH}/redis:/var/lib/redis
-      - ${HOST_LOGS_PATH}/redis:/var/log/redis
+      - ./data/redis:/var/lib/redis
+      - ./logs/redis:/var/log/redis
     ports:
       - ${REDIS_PORT}:6379
-    networks:
-      - backend
 
   # ----------------------------------------------------------------------------
 
@@ -136,9 +110,7 @@ services:
       args:
         - PHP_VERSION=${PHP_VERSION}
     volumes:
-      - ${HOST_APP_PATH}:/var/www/acme
-    networks:
-      - backend
+      - ..:/app/acme
     depends_on:
       - mysql
       - mongodb
